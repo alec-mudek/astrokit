@@ -7,11 +7,12 @@
 
 namespace astrokit
 {
-    inline Eigen::Vector<double, 6> cart_to_coe(Eigen::Vector<double, 6> cart, double mu)
+    inline Eigen::Vector<double, 6> cart_to_coe(const Eigen::Vector<double, 6>& cart, const double mu)
+    // slightly modified version of EMTG's StateConverter CartesiantoCOE function
     // return order: sma, ecc, inc, raan, argp, ta
     {
-        r = cart.segment<3>(0);
-        v = cart.segment<3>(3);
+        Eigen::Vector3d r = cart.segment<3>(0);
+        Eigen::Vector3d v = cart.segment<3>(3);
 
         double R = r.norm();
         double V = v.norm();
@@ -30,27 +31,86 @@ namespace astrokit
         double inc = safe_acos(h_hat[2]);
 
         // raan - compute ascending node vector
-        Eigen::Vector3d n = k_hat.cross(h_hat); //k_hat from rotations.h
-        double raan = std::atan2(n[1], n[0]);
-
         // argp - use node & ecc vectors
-        double argp = safe_acos(e_vec.dot(n) / (ecc * n.norm()));
-        if (e_vec[2] < 0.0)
+        // ta - use position & eccentricity vector or n vector & eccentricity vector
+        Eigen::Vector3d n = k_hat.cross(h_hat); //k_hat from rotations.h
+        double N = n.norm(); //if equatorial orbit, k_hat = h_hat, raan = 0, and the math can breakdown
+        double raan = 0; //default to zero; fill in if able
+        double argp = 0;
+        double ta   = 0;
+        double delta = 1e-6;
+        //is it non-equatorial?
+        if (N > delta)
         {
-            argp = 2 * PI - argp;
-        }
+            raan = safe_acos(n[0] / N);
+            
+            if (n[1] < 0.0)
+            {
+                raan = 2.0 * PI - raan;
+            }
 
-        // ta - use position & eccentricity vectors
-        double ta = std::atan2(std::sqrt(1 - ecc * ecc) * r.dot(h), r.dot(e_vec));
+            //is it non-circular?
+            if (ecc > delta)
+            {
+                argp = safe_acos(n.dot(e_vec) / (N * ecc));
+                if (e_vec[2] < 0.0)
+                {
+                    argp = 2.0 * PI - argp;
+                }
+                ta = safe_acos(e_vec.dot(r) / (ecc * R));
+                if (r.dot(v) < 0.0) //quadrant check
+                {
+                    ta = 2.0 * PI - ta;
+                }
+            }
+            else //it's circular -> use the ascending node to define ta
+            {
+                ta = safe_acos(n.dot(r) / (N * R));
+                if (r[2] < 0.0) //quadrant check
+                {
+                    ta = 2.0 * PI - ta;
+                }
+            }
+
+        }
+        else //trajectory is equatorial
+        {
+            //is it non-circular
+            if (ecc > delta) //equatorial & non-circ
+            {
+                argp = safe_acos(e_vec[0] / ecc);
+                if (e_vec[1] < 0.0) //quad check
+                {
+                    argp = 2.0 * PI - argp;
+                }
+                ta = safe_acos(e_vec.dot(r) / (ecc * R));
+                if (r.dot(v) < 0.0) //quad check
+                {
+                    ta = 2.0 * PI - ta;
+                }
+            }
+            else //equatorial, circular orbit
+            {
+                ta = safe_acos(r[2] / R);
+                if (r[2] < 0.0) //quad check
+                {
+                    ta = 2.0 * PI - ta;
+                }
+            }
+        }
+        //wrap ta if needed
+        if (std::abs(ta - 2.0 * PI) < delta)
+        {
+            ta = 0.0;
+        }
 
         Eigen::Vector<double, 6> coes;
         coes << sma, ecc, inc, raan, argp, ta;
 
         return coes;
-
     }
 
-    inline Eigen::Vector<double, 6> coe_to_cart(Eigen::Vector<double, 6> coes, double mu)
+    inline Eigen::Vector<double, 6> coe_to_cart(const Eigen::Vector<double, 6>& coes, const double mu)
     {
         double a = coes[0];
         double e = coes[1];

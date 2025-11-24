@@ -11,7 +11,7 @@ namespace astrokit
     constexpr double MU_SUN_km3_s2 = 132712000000.0;
     constexpr double AU_km         = 149598000.0;
     constexpr double PI            = std::numbers::pi;
-	constexpr double DEG2RAD       = PI / 180.0;
+    constexpr double DEG2RAD       = PI / 180.0;
 	constexpr double RAD2DEG       = 180.0 / PI;
 
     struct Planet {

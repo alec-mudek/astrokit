@@ -28,14 +28,9 @@ Eigen is header-only — simply place it in your `include/` directory or point y
 
 ### 2\. Add astrokit to your include path
 
-Clone this repo and add the `include/` directory to your compiler’s include paths:
+Clone this repo and add the `include/` directory to your compiler’s include path.
 
-```bash
--I path/to/astrokit/include
-```
-
-You do **not** need to build or link anything.  
-Just include the headers you need.
+Similar to Eigen, you do **not** need to build or link anything.  
 
 ---
 
