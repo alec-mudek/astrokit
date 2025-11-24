@@ -1,132 +1,163 @@
-# astrokit
+# **astrokit**
 
-Header-only C++ library with core astrodynamics functions. Built using the Eigen library, which is not included in this repo.
-
-
-
-A getting started guide for Eigen can be found here: https://libeigen.gitlab.io/eigen/docs-nightly/GettingStarted.html
+**astrokit** is a lightweight, **header-only C++ astrodynamics library** that provides core trajectory tools: force models, integrators, propagators, coordinate conversions, mathematical utilities, and planetary constants.
 
 
 
-You can download Eigen here: https://libeigen.gitlab.io/
+The library is built on top of **Eigen** (header-only linear algebra).  
+Eigen is **not included** in this repository and must be installed separately.
+
+---
 
 
 
-Eigen is also a header-only library, so once the files are downloaded and in your include path, you are ready to use astrokit.
+## **Installation**
 
-Similar to Eigen, astrokit simply needs to be downloaded and the include/ directory in this repo must be in your include path.
+### 1\. Install Eigen
 
-This library uses the astrokit namespace throughout. An example usage:
+Download Eigen from the official source:
+
+* **Getting Started:**  
+  https://libeigen.gitlab.io/eigen/docs-nightly/GettingStarted.html
+* **Downloads:**  
+  https://libeigen.gitlab.io/
+
+Eigen is header-only — simply place it in your `include/` directory or point your compiler to its path.
+
+---
+
+### 2\. Add astrokit to your include path
+
+Clone this repo and add the `include/` directory to your compiler’s include paths:
+
+```bash
+-I path/to/astrokit/include
+```
+
+You do **not** need to build or link anything.  
+Just include the headers you need.
+
+---
 
 
 
-\#include <astrokit/state\_converter.h>
+## **Example Usage: Convert a Cartesian State to COEs**
 
-//example use case: convert cartesian state to orbital elements
 
-Eigen::Matrix<double, 6, 1> cartesian\_state;
+#include <Eigen/Dense>
+#include <astrokit/state\_converter.h>
 
+// define a cartesian state
+Eigen::Vector<double, 6> cartesian\_state;
 cartesian\_state << x, y, z, vx, vy, vz;
 
-Eigen::Matrix<double, 6, 1> coes = astrokit::cart\_to\_coe(cartesian\_state, mu\_central\_body);
+
+// and use astrokit's cart\_to\_coe function to compute the COEs
+Eigen::Vector<double, 6> coes =
+    astrokit::cart\_to\_coe(cartesian\_state, mu\_central\_body);
+---
+
+## 
+
+## **Modules and Features**
+
+### **constants.h**
+
+* Fundamental constants (AU, PI, MU\_SUN, DEG2RAD, etc.)
+* Planetary constants using the `Planet` struct:
+    struct Planet {
+        double MU\_km3\_s2;
+        double R\_MEAN\_km;
+        double R\_EQUATOR\_km;
+        double SMA\_km;
+        double ECC\_deg;
+        double INC\_deg;
+        double T\_days;
+        double J2;
+    };
+  
+* Access example:
+
+&nbsp; astrokit::EARTH.MU\_km3\_s2;
+  astrokit::JUPITER.J2;
+
+
+### **force\_models.h**
+
+* `accel\_kep` — Two-body Keplerian acceleration model
+* `accel\_j2` — **J2-only** gravitational perturbation
 
 
 
-Test scripts and example scripts will be added to the repo soon.
+### **integrators.h**
+
+* `rk4\_step` — Classic fixed-step 4th-order Runge–Kutta integrator
 
 
 
+### **propagator.h**
 
-
-Current astrokit scripts \& functions:
-
-
-
--constants.h
-
-    -Basic constants like 1 AU, PI, MU\_SUN
-
-    -Planetary constants stored in a Planet struct
-
- 	struct Planet
-
- 	{
-
-            double MU\_km3\_s2;
-
-            double R\_MEAN\_km;
-
-            double SMA\_km;
-
-            double ECC\_deg;
-
-            double INC\_deg;
-
-            double T\_days;
-
-            double J2;
-
-    	};
-
-    -Each planet has its own Planet struct with access to the specified parameters: EARTH::MU\_km3\_s2, URANUS::SMA\_km, etc.
+* `propagator` — Simple fixed-step time propagation
 
 
 
--force\_models.h
+### **math\_utils.h**
 
-    -accel\_kep: Keplerian, two-body equations of motion. Accepts a state and mu value and returns dstate/dt.
-
-    -accel\_j2: J2 perturbations only. Doesn't include any central body acceleration; must also include an AccelKep (or other)
-
- 	      call for that. Accepts a state, mu, equatorial radius, and J2 value; returns dstate/dt.
+* `safe\_acos` — Numerically stable acos()
+* `random\_int` — Uniform random integer
+* `random\_double` — Uniform random double
 
 
 
--integrators.h
+### **rotations.h**
 
-    -rk4\_step: Simple, fixed-step, 4th-order Runge Kutta implementation. Uses the standard Butcher Tableau.
-
-
-
--propagator.h
-
-    -propagator: Simple, fixed step propagation that can handle forward \& backwards prop. Returns both a state history and a
-
- 		 time history over the propagation.
+* Axis-angle rotation matrices
+* `lonlat\_to\_cart` conversion
 
 
 
--math\_utils.h
+### **state\_converter.h**
 
-    -safe\_acos: Arccos computation with clamped input value to make sure machine precision or roundoff error doesn't result in a
-
- 	        value outside of -1.0 < x < 1.0 when acos(x) is computed.
-
-    -random\_int: Returns a random integer between some lower \& upper bounds.
-
-    -random\_double: Returns a random double between some lower \& upper bounds.
+* `cart\_to\_coe` and `coe\_to\_cart` transformations
 
 
 
--rotations.h
+## **Testing**
 
-    -x\_rotation: Returns the rotation matrix for a rotation about the x-axis.
+Includes Boost Odeint comparison tests validating:
 
-    -y\_rotation: Returns the rotation matrix for a rotation about the y-axis.
-
-    -z\_rotation: Returns the rotation matrix for a rotation about the z-axis.
-
-    -lonlat\_to\_cart: Returns a rotation matrix to convert longitude + latitude to cartesian coordinates.
+* Keplerian propagation
+* J2-perturbed propagation
 
 
 
--state\_converter.h
+## **Directory Structure**
 
-    -cart\_to\_coe: Computes the Classical Orbital Elements of a user-provided cartesian state and central body gravitational parameter.
+astrokit/
 
-    -coe\_to\_cart: Computes the cartesian state of a user-provided COEs and central body gravitational parameter.
+|
 
+|--include/astrokit/
 
+|   |--constants.h
 
+|   |--force\_models.h
 
+|   |--integrators.h
+
+|   |--propagator.h
+
+|   |--math\_utils.h
+
+|   |--rotations.h
+
+|   |--state\_converter.h
+
+|
+
+|--tests/
+
+|   |--test\_rk4\_prop.cpp
+
+|\_\_\_
 
