@@ -13,7 +13,9 @@ namespace astrokit
 
 	inline Eigen::Matrix3d abritrary_axis_rotation(double angle, Eigen::Vector3d axis)
 	{
-		return Eigen::Matrix3d(1, 0, 0, 0, 1, 0, 0, 0, 1); //will fill this in later; not currently using it
+		//will fill this in later; not currently using it
+		//for now, just returning an identity matrix
+		return Eigen::Matrix3d::Identity();
 	}
 
 	inline Eigen::Matrix3d x_rotation(double angle)
