@@ -3,6 +3,8 @@
 #include <cmath>
 #include <algorithm>
 #include <random>
+#include <Eigen/Dense>
+#include "constants.h"
 
 namespace astrokit
 {

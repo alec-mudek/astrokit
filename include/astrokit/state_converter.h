@@ -153,11 +153,14 @@ namespace astrokit
         Eigen::Vector3d r = cart.segment<3>(0);
         Eigen::Vector3d v = cart.segment<3>(3);
 
+        double R = r.norm();
+        double V = v.norm();
+
         double raan = atan2(r[1], r[0]);
-        double dec = asin(r[2] / r.norm());
+        double dec = asin(r[2] / R);
 
         double vraan = atan2(v[1], v[0]);
-        double vdec = asin(v[2] / v.norm());
+        double vdec = asin(v[2] / V);
 
         Eigen::Vector<double, 6> radec;
         radec << R, raan, dec, V, vraan, vdec;
