@@ -7,9 +7,9 @@ namespace astrokit
 {
 	//note: all angles in this script assume radians
 
-	inline constexpr Eigen::Vector3d i_hat(1, 0, 0);
-	inline constexpr Eigen::Vector3d j_hat(0, 1, 0);
-	inline constexpr Eigen::Vector3d k_hat(0, 0, 1);
+	inline Eigen::Vector3d i_hat(1, 0, 0);
+	inline Eigen::Vector3d j_hat(0, 1, 0);
+	inline Eigen::Vector3d k_hat(0, 0, 1);
 
 	inline Eigen::Matrix3d arbitrary_axis_rotation(double angle, Eigen::Vector3d axis)
 	{
@@ -24,9 +24,9 @@ namespace astrokit
 		double st = sin(angle);
 
 		Eigen::Matrix3d C;
-		C << ux * ux * (1 - ct) + ct, ux * u y* (1 - ct) - uz * st, ux* uz* (1 - ct)* uy* st,
-			 uy * ux * (1 - ct) + uz * st, uy* uy* (1 - ct) + ct, uy* uz* (1 - ct) - ux * st,
-			 uz * ux * (1 - ct) - uy * st, uz* uy* (1 - ct) + ux * st, uz* uz* (1 - ct) + ct;
+		C << ux * ux * (1 - ct) + ct,      ux * uy * (1 - ct) - uz * st, ux * uz * (1 - ct) * uy * st,
+			 uy * ux * (1 - ct) + uz * st, uy * uy * (1 - ct) + ct,      uy * uz * (1 - ct) - ux * st,
+			 uz * ux * (1 - ct) - uy * st, uz * uy * (1 - ct) + ux * st, uz * uz * (1 - ct) + ct;
 
 		return C;
 	}
