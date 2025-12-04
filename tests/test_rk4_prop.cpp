@@ -57,8 +57,8 @@ int main()
 {
     //going to propagate a spacecraft in LEO
     //need some constants
-    const double mu = astrokit::EARTH.MU_km3_s2;
-    const double Re = astrokit::EARTH.R_EQUATOR_km;
+    const double mu = astrokit::EARTH.MU.km3_s2;
+    const double Re = astrokit::EARTH.R_EQUATOR.km;
     const double J2 = astrokit::EARTH.J2;
 
     //arbitrarily picking a circular, 500km orbit

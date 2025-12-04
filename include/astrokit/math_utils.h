@@ -47,6 +47,35 @@ namespace astrokit
 		return angle;
 	}
 
+	inline double wrap_angle_diff(double angle1, double angle2)
+	//function for if you want the difference between two angles (angle2 - angle1) to always be in [0, 2pi]
+	{
+		double diff = angle2 - angle1;		
+		if (diff < 0.0) //if less than zero, wrap it into [0, 2pi]
+		{
+			return diff + (2.0 * astrokit::PI);
+		}
+		return diff;
+	}
+
+	inline double angular_distance_from_zero(double angle)
+	//function to provide the angular magnitude away from zero for a given angle
+	//e.g. 350 degrees becomes 10 degrees (though this function operates in rad, not deg)
+	{
+		//might've provided a negative angle; we want angles in the range [0, 2pi]
+		while (angle < 0)
+		{
+			angle += 2.0 * astrokit::PI;
+		}
+
+		//now subtract the angle from 2pi if it is greater than pi
+		if (angle > astrokit::PI)
+		{
+			return 2.0 * astrokit::PI - angle;
+		}
+		return angle;
+	}
+
 	inline int random_int(int min, int max)
 	//using a uniform distribution for these
 	{
