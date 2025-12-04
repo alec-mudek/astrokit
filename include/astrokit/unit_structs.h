@@ -9,6 +9,7 @@
 
 namespace astrokit 
 {
+#pragma region quantity defs
     //first we need a generic struct to define what a generic quantity's units are  (just looking at length & time for now)
     template<int L, int T> //length, time (powers of; e.g. L = 3, T = -2 -> Length^3/Time^2 [mu])
     struct Quantity
@@ -23,19 +24,35 @@ namespace astrokit
         }
     };
 
-    //now that we know what a generic quantity is, need to define the * and / operators (e.g. required for MU)
+    //now that we know what a generic quantity is, need to define the primary mathematical operators
+    // (just defining +, -, *, / for now)
+    template<int L, int T>
+    constexpr Quantity<L, T> operator+(Quantity<L, T> q1, Quantity<L, T> q2)
+    {
+        return Quantity<L, T>{q1.value + q2.value};
+    }
+
+    template<int L, int T>
+    constexpr Quantity<L, T> operator-(Quantity<L, T> q1, Quantity<L, T> q2)
+    {
+        return Quantity<L, T>{q1.value - q2.value};
+    }
+
+    
     template<int L1, int T1, int L2, int T2>
-    constexpr auto operator*(Quantity<L1, T1> q1, Quantity<L2, T2> q2) -> Quantity<L1 + L2, T1 + T2>
+    constexpr Quantity<L1 + L2, T1 + T2> operator*(Quantity<L1, T1> q1, Quantity<L2, T2> q2)
     {
         return Quantity<L1 + L2, T1 + T2>{q1.value* q2.value};
     }
 
     template<int L1, int T1, int L2, int T2>
-    constexpr auto operator/(Quantity<L1, T1> q1, Quantity<L2, T2> q2) -> Quantity<L1 - L2, T1 - T2>
+    constexpr Quantity<L1 - L2, T1 - T2> operator/(Quantity<L1, T1> q1, Quantity<L2, T2> q2)
     {
         return Quantity<L1 - L2, T1 - T2>{q1.value / q2.value};
     }
+#pragma endregion quantity defs
 
+#pragma region unit defs
     //now to define our core quantities/units
     struct Distance : Quantity<1, 0> //length^1, time^0
     {
@@ -66,7 +83,10 @@ namespace astrokit
 
         constexpr operator double() const
         {
-            return deg; //WARNING: Might change this to rad in the future
+            return rad; //note: takes an angle in degrees in the constructor and defaults to radians in the output.
+                        //      don't like switching units like this but this is almost always how I end up using angles.
+                        //      the planetary constants are also provided in degrees which is currently the primary/only 
+                        //      use for this struct
         }
     };
 
@@ -106,4 +126,5 @@ namespace astrokit
             return km3_s2;
         }
     };
+#pragma endregion unit defs
 } //namespace astrokit
