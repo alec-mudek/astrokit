@@ -1,44 +1,106 @@
 # **astrokit**
 
-**astrokit** is a lightweight, **header-only C++ astrodynamics library** that provides core trajectory tools: force models, integrators, propagators, coordinate conversions, mathematical utilities, and planetary constants.
+**astrokit** is a lightweight, **header-only C++ astrodynamics library** providing core spacecraft-trajectory functionality for research, simulation, and rapid prototyping. It is designed to be:
+
+* **Fast** — zero external dependencies beyond Eigen
+* **Minimalistic** — focused on essential astrodynamics operations
+* **Extensible** — easy to integrate into larger mission-design or navigation tools
+* **Python-portable** — with optional pybind11 bindings in place for most components
+
+---
+
+## 
+
+## Key Features at a Glance
+
+* Two-body and J2 perturbed dynamics
+* Fixed-step RK4 integrator
+* Propagation module
+* Cartesian, Classical Orbital Element, and Spherical RADEC conversions
+* Rotation matrix utilities
+* Planetary constants database with dimension handling
+* Utility math functions (safe acos, random generators)
 
 
 
-The library is built on top of **Eigen** (header-only linear algebra).  
-Eigen is **not included** in this repository and must be installed separately.
+These modules form the foundation for higher-level tools such as constellation simulators, navigation filter experiments, Monte‑Carlo analysis, and mission‑design workflows.
+
+---
+
+## 
+
+## What’s Inside astrokit
+
+### **Force Models**
+
+* `accel\_kep` — Two-body Keplerian acceleration
+* `accel\_j2` — J2‑perturbed gravitational model
+
+
+
+### **Integrators**
+
+* `rk4\_step` — Classic 4th‑order Runge–Kutta
+
+
+
+### **Propagator**
+
+* `propagator` — Wraps dynamics + integrator into a simple fixed‑step propagator
+
+
+
+### **Coordinate \& Element Conversions**
+
+* `cart\_to\_coe` — Cartesian → classical orbital elements
+* `coe\_to\_cart` — Classical orbital elements → Cartesian
+
+
+
+### **Rotation \& Geometry Tools**
+
+* Axis-angle rotation matrices
+* `lonlat\_to\_cart` — Geodetic → Cartesian
+
+
+
+### **Math Utilities**
+
+* `safe\_acos` — Numerically stable inverse cosine
+* `random\_int`, `random\_double` — Uniform RNG helpers
+
+
+
+### **Planetary Constants**
+
+A consolidated `Planet` struct giving access to:
+
+* gravitational parameter
+* mean/equatorial radius
+* orbital elements
+* rotation period
+* J2
+
+
+
+Example:
+
+```
+astrokit::EARTH.SMA; //distance units default to km
+astrokit::EARTH.SMA.au; //can also specify m or au units for Distances thanks to the Quantity templates in unit\\\\\\\_structs.h
+astrokit::JUPITER.T; //Jupiter's orbital period (Time Quantity defaults to seconds)
+astrokit::Jupiter.T.day; //can also specify different units with Time Quantities
+astrokit::JUPITER.J2;
+
+```
 
 ---
 
 
 
-## **Installation**
+## Example: Converting a Cartesian State to COEs
 
-### 1\. Install Eigen
-
-Download Eigen from the official source:
-
-* **Getting Started:**  
-  https://libeigen.gitlab.io/eigen/docs-nightly/GettingStarted.html
-* **Downloads:**  
-  https://libeigen.gitlab.io/
-
-Eigen is header-only — simply place it in your `include/` directory or point your compiler to its path.
-
----
-
-### 2\. Add astrokit to your include path
-
-Clone this repo and add the `include/` directory to your compiler’s include path.
-
-Similar to Eigen, you do **not** need to build or link anything.  
-
----
-
-
-
-## **Example Usage: Convert a Cartesian State to COEs**
-
-
+```
 #include <Eigen/Dense>
 #include <astrokit/state\_converter.h>
 
@@ -46,113 +108,17 @@ Similar to Eigen, you do **not** need to build or link anything.
 Eigen::Vector<double, 6> cartesian\_state;
 cartesian\_state << x, y, z, vx, vy, vz;
 
+// compute the classical orbital elements
+Eigen::Vector<double, 6> coes = astrokit::cart\_to\_coe(cartesian\_state, mu\_central\_body);
+```
 
-// and use astrokit's cart\_to\_coe function to compute the COEs
-Eigen::Vector<double, 6> coes =
-    astrokit::cart\_to\_coe(cartesian\_state, mu\_central\_body);
----
+# Example: Propagation of orbits.
 
-## 
-
-## **Modules and Features**
-
-### **constants.h**
-
-* Fundamental constants (AU, PI, MU\_SUN, DEG2RAD, etc.)
-* Planetary constants using the `Planet` struct:
-    struct Planet {
-        double MU\_km3\_s2;
-        double R\_MEAN\_km;
-        double R\_EQUATOR\_km;
-        double SMA\_km;
-        double ECC\_deg;
-        double INC\_deg;
-        double T\_days;
-        double J2;
-    };
-  
-* Access example:
-
-&nbsp; astrokit::EARTH.MU\_km3\_s2;
-  astrokit::JUPITER.J2;
-
-
-### **force\_models.h**
-
-* `accel\_kep` — Two-body Keplerian acceleration model
-* `accel\_j2` — **J2-only** gravitational perturbation
+An example usage of the integrator and propagator functions can be found in the test\_rk4\_prop.cpp script in the test/ folder.
 
 
 
-### **integrators.h**
-
-* `rk4\_step` — Classic fixed-step 4th-order Runge–Kutta integrator
 
 
 
-### **propagator.h**
-
-* `propagator` — Simple fixed-step time propagation
-
-
-
-### **math\_utils.h**
-
-* `safe\_acos` — Numerically stable acos()
-* `random\_int` — Uniform random integer
-* `random\_double` — Uniform random double
-
-
-
-### **rotations.h**
-
-* Axis-angle rotation matrices
-* `lonlat\_to\_cart` conversion
-
-
-
-### **state\_converter.h**
-
-* `cart\_to\_coe` and `coe\_to\_cart` transformations
-
-
-
-## **Testing**
-
-Includes Boost Odeint comparison tests validating:
-
-* Keplerian propagation
-* J2-perturbed propagation
-
-
-
-## **Directory Structure**
-
-astrokit/
-
-|
-
-|--include/astrokit/
-
-|   |--constants.h
-
-|   |--force\_models.h
-
-|   |--integrators.h
-
-|   |--propagator.h
-
-|   |--math\_utils.h
-
-|   |--rotations.h
-
-|   |--state\_converter.h
-
-|
-
-|--tests/
-
-|   |--test\_rk4\_prop.cpp
-
-|\_\_\_
 
