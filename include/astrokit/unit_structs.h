@@ -2,7 +2,7 @@
 
 #include <numbers>
 
-//trying for a light-weight version of Boost's Unit system
+//trying for a light-weight version of a Unit system (inspired by Monte)
     //note: the immediate use for this is a type-safe framework for making the constants.h Planet struct more robust
     //		but there will likely be broader use cases for this generic system down the road. if there aren't it was 
     //		still fun to poke at

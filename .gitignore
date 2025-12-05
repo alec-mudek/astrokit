@@ -49,3 +49,5 @@ lambert_izzo.h
 
 # Don't want to include Eigen in the repo itself
 include/Eigen/
+include/pybind11/
+python/build/
