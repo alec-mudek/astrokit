@@ -20,5 +20,7 @@ namespace astrokit_bindings
         m.def("angular_distance_from_zero", &angular_distance_from_zero, py::arg("angle"), "Function to provide the angular magnitude away from zero for a given angle. E.g. 3pi/2 becomes pi/2.");
         m.def("random_int", &random_int, py::arg("min"), py::arg("max"), "Returns a random integer in the range [min, max].");
         m.def("random_double", &random_double, py::arg("min"), py::arg("max"), "Returns a random double in the range [min, max].");
+        m.def("sind", &sind, py::arg("angle"), "Sine function for input angle in degrees instead of radians.");
+        m.def("cosd", &cosd, py::arg("angle"), "Cosine function for input angle in degrees instead of radians.");
     }
 } // namespace astrokit_bindings

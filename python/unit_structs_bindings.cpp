@@ -1,5 +1,6 @@
 
 #include <pybind11/pybind11.h>
+#include <string>
 #include <astrokit/unit_structs.h>
 
 namespace py = pybind11;
@@ -24,6 +25,9 @@ namespace astrokit_bindings
             .def("__add__", [](const Distance& d, double x) { return d.km + x; })
             .def("__sub__", [](const Distance& d, double x) { return d.km - x; })
             .def("__mul__", [](const Distance& d, double x) { return d.km * x; })
+            .def("__radd__", [](const Distance& d, double x) { return x + d.km; })
+            .def("__rsub__", [](const Distance& d, double x) { return x - d.km; })
+            .def("__rmul__", [](const Distance& d, double x) { return x * d.km; })
             .def("__truediv__", [](const Distance& d, double x) { return d.km / x; })
 
 			//lastly, want to specify how the struct displays to the console
@@ -42,6 +46,9 @@ namespace astrokit_bindings
             .def("__add__", [](const Time& t, double x) { return t.sec + x; })
             .def("__sub__", [](const Time& t, double x) { return t.sec - x; })
             .def("__mul__", [](const Time& t, double x) { return t.sec * x; })
+            .def("__radd__", [](const Time& t, double x) { return x + t.sec; })
+            .def("__rsub__", [](const Time& t, double x) { return x - t.sec; })
+            .def("__rmul__", [](const Time& t, double x) { return x * t.sec; })
             .def("__truediv__", [](const Time& t, double x) { return t.sec / x; })
             .def("__repr__", [](const Time& t) { return "<astrokit::Time " + std::to_string(t.sec) + " s>"; });
 
@@ -54,6 +61,9 @@ namespace astrokit_bindings
             .def("__add__", [](const Angle& a, double x) { return a.rad + x; })
             .def("__sub__", [](const Angle& a, double x) { return a.rad - x; })
             .def("__mul__", [](const Angle& a, double x) { return a.rad * x; })
+            .def("__radd__", [](const Angle& a, double x) { return x + a.rad; })
+            .def("__rsub__", [](const Angle& a, double x) { return x - a.rad; })
+            .def("__rmul__", [](const Angle& a, double x) { return x * a.rad; })
             .def("__truediv__", [](const Angle& a, double x) { return a.rad / x; })
             .def("__repr__", [](const Angle& a) { return "<astrokit::Angle " + std::to_string(a.rad) + " rad>"; });
             //hopefully the __repr__ will help avoid confusion w/the mixed units for construction vs default output
@@ -65,6 +75,9 @@ namespace astrokit_bindings
             .def("__add__", [](const Mu& mu, double x) { return mu.km3_s2 + x; })
             .def("__sub__", [](const Mu& mu, double x) { return mu.km3_s2 - x; })
             .def("__mul__", [](const Mu& mu, double x) { return mu.km3_s2 * x; })
+            .def("__radd__", [](const Mu& mu, double x) { return x + mu.km3_s2; })
+            .def("__rsub__", [](const Mu& mu, double x) { return x - mu.km3_s2; })
+            .def("__rmul__", [](const Mu& mu, double x) { return x * mu.km3_s2; })
             .def("__truediv__", [](const Mu& mu, double x) { return mu.km3_s2 / x; })
             .def("__repr__", [](const Mu& mu) { return "<Mu " + std::to_string(mu.km3_s2) + " km^3/s^2>"; });
 	}

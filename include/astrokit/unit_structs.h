@@ -118,8 +118,7 @@ namespace astrokit
             Quantity<3, -2>(value_km3_s2), km3_s2(value_km3_s2), m3_s2(value_km3_s2 * 1.0e9) {}
 
         constexpr Mu(Quantity<1, 0> L, Quantity<0, 1> T) :
-            Mu((L.value* L.value* L.value) / (T.value * T.value)) {
-        }
+            Mu((L.value* L.value* L.value) / (T.value * T.value)) {}
 
         constexpr operator double() const
         {

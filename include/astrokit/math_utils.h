@@ -25,13 +25,17 @@ namespace astrokit
 		return (x > 0) - (x < 0);
 	}
 
-	inline double angle_between_vecs(Eigen::Vector3d vec1, Eigen::Vector3d vec2)
+	inline double angle_between_vecs(const Eigen::Vector3d& vec1, const Eigen::Vector3d& vec2)
 	//directionless; simple angle between two vectors
 	{
+		if (vec1.norm() == 0 || vec2.norm() == 0)
+		{
+			return 0.0;
+		}
 		return safe_acos(vec1.dot(vec2) / (vec1.norm() * vec2.norm()));
 	}
 
-	inline double angle_between_vecs_w_direction(Eigen::Vector3d vec1, Eigen::Vector3d vec2, Eigen::Vector3d ref_axis)
+	inline double angle_between_vecs_w_direction(const Eigen::Vector3d& vec1, const Eigen::Vector3d& vec2, const Eigen::Vector3d& ref_axis)
 	//uses the reference axis to determine if the rotation angle is > or < 180 degrees
 	{
 		//first get the angle
@@ -89,6 +93,20 @@ namespace astrokit
 		static std::mt19937 rng(std::random_device{}());
 		std::uniform_real_distribution<double> dist(min, max);
 		return dist(rng);
+	}
+
+	inline double sind(double angle)
+	//handy sin function for when angle is in degrees
+	{
+		angle *= DEG2RAD;
+		return std::sin(angle);
+	}
+
+	inline double cosd(double angle)
+	//handy cos function for when angle is in degrees
+	{
+		angle *= DEG2RAD;
+		return std::cos(angle);
 	}
 
 } // namespace astrokit

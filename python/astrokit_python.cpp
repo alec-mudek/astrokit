@@ -11,6 +11,7 @@ namespace astrokit_bindings
     void bind_rotations(py::module_& m);
     void bind_state_converter(py::module_& m);
     void bind_force_models(py::module_& m);
+    void bind_physics_utils(py::module_& m);
 }
 
 PYBIND11_MODULE(astrokit, m) 
@@ -21,6 +22,7 @@ PYBIND11_MODULE(astrokit, m)
     astrokit_bindings::bind_rotations(m);
     astrokit_bindings::bind_state_converter(m);
     astrokit_bindings::bind_force_models(m);
+    astrokit_bindings::bind_physics_utils(m);
     //note: leaving integrators.h and propagator.h out of this; they're more complicated to make work w/pybind 
     //      and there are already plenty of options available in python for generic RK4 propagation functions
 }

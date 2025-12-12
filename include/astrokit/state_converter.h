@@ -91,10 +91,10 @@ namespace astrokit
             }
             else //equatorial, circular orbit
             {
-                ta = safe_acos(r[2] / R);
-                if (r[2] < 0.0) //quad check
+                ta = std::atan2(r[1], r[0]);
+                if (ta < 0.0)
                 {
-                    ta = 2.0 * PI - ta;
+                    ta += 2.0 * PI;
                 }
             }
         }
